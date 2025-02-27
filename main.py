@@ -1,7 +1,3 @@
-# git add .
-# git commit -m "message"
-# git push origin main
-
 from inference import get_model
 import supervision as sv
 from inference.core.utils.image_utils import load_image_bgr
