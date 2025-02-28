@@ -2,6 +2,8 @@ from ultralytics import YOLO
 import requests
 import cv2
 import numpy as np
+import discord 
+from discord.ext import commands
 
 model = YOLO('yolo11n.pt')
 
