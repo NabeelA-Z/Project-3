@@ -2,38 +2,53 @@ from ultralytics import YOLO
 import requests
 import cv2
 import numpy as np
-import discord 
-from discord.ext import commands
 
-model = YOLO('yolo11n.pt')
+class ComputerVision:
 
-def get_image_from_url(url):
-    try:
-        response = requests.get(url)
-        image_array = np.asarray(bytearray(response.content), dtype=np.uint8) # numpy image byte array
-        image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
+    def __init__(self, model="yolo11n.pt"):
+        self.model = YOLO(model) # yolo model, defaults to yolo11n.pt, which is the one being used in this project
 
-        return image
+    def get_image_from_url(self, url):
+        try:
+            response = requests.get(url)
+            image_array = np.asarray(bytearray(response.content), dtype=np.uint8) # numpy image byte array
+            image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
 
-    except Exception as e:
-        print(e.args[0])
+            return image
 
-def get_objects(url, showimage=True):
-    results = model.predict(source=get_image_from_url(url), conf=0.4, save=False, stream=False)
+        except Exception as e:
+            print(e.args[0])
+            return None # should stop execution if we get an exception?
 
-    if showimage == True:
-        annotated_image = results[0].plot()
-        cv2.imshow("Detection Image", annotated_image)
-        cv2.waitKey(0) # wait until key press to close iagmae
-        cv2.destroyAllWindows()
+    def get_objects(self, url, showimage=True):
+        
+        results = self.model.predict(source=self.get_image_from_url(url), conf=0.25, save=False, stream=False) # adjut conf value
 
-    for box in results[0].boxes:
-        x1, y1, x2, y2 = map(int, box.xyxy[0]) 
-        class_id = int(box.cls[0]) 
-        confidence = box.conf[0].item() 
-        print(f"Detected: {results[0].names[class_id]}, BBox: ({x1}, {y1}, {x2}, {y2})")
+        if showimage == True:
+            annotated_image = results[0].plot()
+            cv2.imshow("Detection Image", annotated_image)
+            cv2.waitKey(0) # wait until key press to close iagmae
+            cv2.destroyAllWindows()
 
-    return results
+        for box in results[0].boxes:
+            x1, y1, x2, y2 = map(int, box.xyxy[0]) # mapping x1,y1 x2,y2 coord pairs of box for each object
+            class_id = int(box.cls[0]) # get the class_id so we can say what the object is from an already defined list of detectable objects
+            confidence = box.conf[0].item() # confidence score of each box. .item() is used to PyTorch tensor value to a normal int
 
-get_objects("https://media.discordapp.net/attachments/1286060182866104423/1344380810509287564/image.jpg?ex=67c0b3b2&is=67bf6232&hm=1c170ff57b0a03efc390bdcc140b8c39438feff7527ed152879a6970fa8e13fa&=&format=webp&width=556&height=741")
+        # now we make a dictionary to readily have key data points available to us
+            detection = {
+                "class": results[0].names[class_id],
+                "bbox": (x1, x2, y1, y2),  # tuple
+                "confidence": confidence
+            }
+
+            print(f"Detected: {results[0].names[class_id]}, BBox: ({x1}, {y1}, {x2}, {y2})")
+
+        return results
+
+cv = ComputerVision()
+results = cv.get_objects("https://media.discordapp.net/attachments/1286060182866104423/1344380810509287564/image.jpg?ex=67c356b2&is=67c20532&hm=cf113985d5a9dd6682b6a7602460e928c369747476b24375ea4aba73e751e40e&=&format=webp&width=556&height=741")
+print(results)
+"""if __name__ == "__main__":
+    print("This class is meant to be imported.")"""
 
