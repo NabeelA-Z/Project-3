@@ -1,3 +1,5 @@
+# next steps: format return arr in get_objects properly, add tts to speak out objects, consider using specific coordinate positions
+
 import discord
 import os
 from dotenv import load_dotenv
@@ -15,7 +17,8 @@ class ListenerBot(discord.Client):
         super().__init__(intents=intents) # make sure we inherit the init of discord.Client as well as its methods
 
     async def on_ready(self):
-        print(f"Waiting for images.")
+        general_channel_id = self.get_channel(1345218942028873840)
+        await general_channel_id.send(f"Waiting for image.")
 
     async def on_message(self, message):
 
@@ -24,7 +27,8 @@ class ListenerBot(discord.Client):
         
         if message.attachments != []:
             url = message.attachments[0].url
-            print(detector.get_objects(url))
-
+            await message.reply(content=detector.get_objects(url, showimage=False)) # await basically allows other functions to run at the same time
+            await message.channel.send("Waiting for image.")
+                                                                                           
 bot = ListenerBot()
 bot.run(BOT_TOKEN)

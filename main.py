@@ -20,7 +20,7 @@ class ComputerVision:
             print(e.args[0])
             return None # should stop execution if we get an exception?
 
-    def get_objects(self, url, showimage=True):
+    def get_objects(self, url, showimage=True) -> list:  #should return a list
         
         results = self.model.predict(source=self.get_image_from_url(url), conf=0.25, save=False, stream=False) # adjut conf value
 
@@ -45,13 +45,10 @@ class ComputerVision:
             }
 
             #print(f"Detected: {results[0].names[class_id]}, BBox: ({x1}, {y1}, {x2}, {y2})")
-            object_arr.append[results[0].names[class_id]]
+            object_arr.append(results[0].names[class_id])
 
         return object_arr
 
-cv = ComputerVision()
-results = cv.get_objects("https://media.discordapp.net/attachments/1286060182866104423/1344380810509287564/image.jpg?ex=67c356b2&is=67c20532&hm=cf113985d5a9dd6682b6a7602460e928c369747476b24375ea4aba73e751e40e&=&format=webp&width=556&height=741")
-print(results)
-"""if __name__ == "__main__":
-    print("This class is meant to be imported.")"""
+if __name__ == "__main__":
+    print("This class is meant to be imported.")
 
