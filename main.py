@@ -30,6 +30,8 @@ class ComputerVision:
             cv2.waitKey(0) # wait until key press to close iagmae
             cv2.destroyAllWindows()
 
+        object_arr = [] #make an array to contain detected objects for testing purposes
+
         for box in results[0].boxes:
             x1, y1, x2, y2 = map(int, box.xyxy[0]) # mapping x1,y1 x2,y2 coord pairs of box for each object
             class_id = int(box.cls[0]) # get the class_id so we can say what the object is from an already defined list of detectable objects
@@ -42,9 +44,10 @@ class ComputerVision:
                 "confidence": confidence
             }
 
-            print(f"Detected: {results[0].names[class_id]}, BBox: ({x1}, {y1}, {x2}, {y2})")
+            #print(f"Detected: {results[0].names[class_id]}, BBox: ({x1}, {y1}, {x2}, {y2})")
+            object_arr.append[results[0].names[class_id]]
 
-        return results
+        return object_arr
 
 cv = ComputerVision()
 results = cv.get_objects("https://media.discordapp.net/attachments/1286060182866104423/1344380810509287564/image.jpg?ex=67c356b2&is=67c20532&hm=cf113985d5a9dd6682b6a7602460e928c369747476b24375ea4aba73e751e40e&=&format=webp&width=556&height=741")

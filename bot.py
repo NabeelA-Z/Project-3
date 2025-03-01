@@ -1,7 +1,12 @@
 import discord
+import os
+from dotenv import load_dotenv
 from main import ComputerVision
 
 detector = ComputerVision()
+
+load_dotenv() # new to environment variables and os, but hopefully should keep my token safe lol
+BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
 
 class ListenerBot(discord.Client):
     
@@ -20,3 +25,6 @@ class ListenerBot(discord.Client):
         if message.attachments != []:
             url = message.attachments[0].url
             print(detector.get_objects(url))
+
+bot = ListenerBot()
+bot.run(BOT_TOKEN)
